@@ -44,7 +44,6 @@
   # Pacotes que precisam de configuração
   imports = [
 
-    ./backintime
     ./bat
     ./environment
     ./fish

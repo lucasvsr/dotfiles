@@ -1,3 +1,4 @@
+com.axosoft.GitKraken
 com.bitwarden.desktop
 com.getpostman.Postman
 com.github.GradienceTeam.Gradience
@@ -8,8 +9,11 @@ com.raggesilver.BlackBox
 com.spotify.Client
 com.transmissionbt.Transmission
 io.dbeaver.DBeaverCommunity
+io.github.Figma_Linux.figma_linux
 io.otsaloma.gaupol
 org.filezillaproject.Filezilla
+org.gimp.GIMP
+org.gimp.GIMP.Manual
 org.gnome.Boxes
 org.gnome.gitg
 org.kde.subtitlecomposer
