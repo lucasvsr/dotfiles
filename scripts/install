@@ -1,0 +1,79 @@
+#! /usr/bin/env bash
+
+exists() {
+
+    type "$1" > /dev/null
+
+}
+
+install() {
+
+    for package in $@ 
+    do
+
+        if ! exists "$package"
+        then
+
+            sudo apt --fix-broken install -y -qq "$package" 
+
+        fi
+
+    done
+
+}
+
+_gh() {
+
+    if ! exists gh && exists curl
+    then
+
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && 
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update -y -qq
+        install gh
+
+    fi
+
+}
+
+put() {
+
+    local value=$1
+    local file=$2
+
+    if [ ! -f "$file" ]
+    then
+
+      touch "$file"
+
+    fi
+  
+    if ! grep "$value" "$file" > /dev/null
+    then
+
+        echo "$value" >> "$file"
+
+    fi
+
+}
+
+install git
+_gh
+put "alias clone='gh auth login && gh repo clone dotfiles $HOME/.config/dotfiles'" "$HOME"/.bash_aliases 
+put "alias setup='bash $HOME/.config/dotfiles/init'" "$HOME"/.bash_aliases
+
+if test -f "$HOME"/.bashrc
+then
+
+    if grep ".bash_aliases" "$HOME"/.bashrc > /dev/null
+    then
+
+        source "$HOME"/.bashrc
+
+    else
+
+        source "$HOME"/.bash_aliases
+
+    fi
+
+fi

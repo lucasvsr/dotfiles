@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+if ! exists blackbox-theme > /dev/null;
+then
+
+    sh -c "$(wget -nv -q -O- https://raw.githubusercontent.com/lucasvsr/blackbox-themes/main/src/install.sh)"
+
+else
+    
+    success "blackbox-theme foi instalado com sucesso"
+    
+fi
+
+
+

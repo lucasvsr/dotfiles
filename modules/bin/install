@@ -1,0 +1,96 @@
+#! /usr/bin/env bash
+
+source $XDG_HOME_BIN/utils/base
+source $XDG_HOME_BIN/utils/manager
+
+declare -a PACKAGES_TO_INSTALL
+declare -a PACKAGES_VALID_TO_INSTALL
+
+build_array_valid() {
+
+    for package in $@
+    do
+        
+        if exists_in_repo $package;
+        then
+
+            PACKAGES_TO_INSTALL+=($package)
+
+        else
+            
+            error "O pacote $package não existe."
+            
+        fi
+
+    done
+    
+
+}
+
+build_array_with_not_installed() {
+
+    for valid_package in ${PACKAGES_TO_INSTALL[@]}
+    do
+        
+        if is_not_installed $valid_package; 
+        then
+
+            PACKAGES_VALID_TO_INSTALL+=($valid_package)
+            info "O pacote $valid_package foi encontrado."
+            
+        fi
+
+    done
+
+}
+
+install() {
+
+    warn "Iniciando a instalação dos pacotes"
+
+    [[ "${#PACKAGES_VALID_TO_INSTALL[@]}" -gt 0 ]] && sudo nala install -y "${PACKAGES_VALID_TO_INSTALL[@]}";
+
+}
+
+valid_install() {
+
+    for installed_package in ${PACKAGES_VALID_TO_INSTALL[@]}
+    do
+        
+        add_package $installed_package
+
+    done
+
+}
+
+help() {
+
+    usage "Utilitário para instalação e sincronia de pacotes do repositório. Exemplo de uso: install <pacote>"
+    exit
+
+}
+
+main() {
+
+    build_array_valid $@
+    build_array_with_not_installed
+    install
+    valid_install
+    sync
+    
+}
+
+for entry in $@
+do
+
+    case $entry in
+        "--help") help
+        ;;
+    esac
+
+done
+
+main $@
+
+
+

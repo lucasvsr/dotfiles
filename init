@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+# Define os diretórios
+export DOTFILES=$HOME/.config/dotfiles
+export SCRIPTS=$DOTFILES/scripts
+export XDG_HOME_BIN=$HOME/.local/bin
+export DOTSHELL=fish
+
+for script in "$DOTFILES"/scripts/*
+do
+
+    source "$script"
+
+done
+
+spinner "Iniciando a instalação dos módulos" -- sleep 2
+
+find "$DOTFILES"/modules/*/sh -type f -exec bash {} \;
+
+success "Instalação concluída"

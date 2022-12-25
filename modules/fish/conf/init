@@ -1,0 +1,25 @@
+set fish_greeting
+
+if test -f $XDG_CONFIG_DIR/fish/env.fish
+    
+    source "$XDG_CONFIG_DIR/fish/env.fish" 
+    
+end
+
+if test -f $XDG_CONFIG_DIR/fish/aliases.fish
+    
+    source "$XDG_CONFIG_DIR/fish/aliases.fish" 
+    
+end
+
+if test -f $XDG_CONFIG_DIR/fish/binds.fish
+    
+    source "$XDG_CONFIG_DIR/fish/binds.fish" 
+    
+end
+
+if test -f $XDG_CONFIG_DIR/fish/conf.d/plugin-git.fish
+
+    __git.init
+
+end

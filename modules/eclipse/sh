@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+if [ ! -d "$HOME"/.local/eclipse ] && [ -f "$XDG_HOME_BIN"/eclipse ]
+then
+    
+    "$XDG_HOME_BIN"/eclipse
+
+elif [ -f "$HOME"/.local/share/applications/Eclipse.desktop ]
+then
+    
+    success "Eclipse instalado com sucesso"
+
+fi
+
+

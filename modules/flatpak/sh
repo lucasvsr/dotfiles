@@ -1,0 +1,61 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+if exists flatpak; 
+then
+
+    if ! flatpak remotes --columns=name --user | grep -i flathub > /dev/null;
+    then
+
+        flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+    
+    fi
+
+    spinner "Iniciando a instalação dos pacotes flatpak" -- sleep 1
+
+    oldIFS=$IFS # mantém o separador de campo
+    IFS=$'\n' # novo separador de campo, o caractere de fim de linha
+
+    while read -r app
+    do
+
+        if ! flatpak list --columns=application | grep -i "$app" > /dev/null &&
+           spinner "Instalando $app" -- flatpak install --user -y "$app"
+        then
+
+            success "$app instalado com sucesso"
+
+        elif flatpak list --columns=application | grep -i "$app" > /dev/null 
+        then
+
+            warn "$app já instalado"
+
+        else
+            
+            flatpak_not_installed=( "$app" )
+            
+        fi
+
+    done < "$DOTFILES"/modules/flatpak/apps
+
+    IFS=$oldIFS
+
+    if test -z "${flatpak_not_installed[@]}" 
+    then
+
+        success "Flatpaks foram instalados com sucesso"
+
+    else
+
+        for package_not_installed in ${flatpak_not_installed[@]}
+        do
+            
+            warn "$package_not_installed não foi instalado"
+
+        done
+        
+    fi
+        
+fi

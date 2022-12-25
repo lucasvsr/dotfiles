@@ -1,0 +1,117 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+source "$XDG_HOME_BIN"/utils/git_validator
+
+IS_DELETE_REMOTE=1
+EXIT=0
+
+help() {
+
+    usage "Utilitário para exclusão de branchs de repositórios git" # Coloca aqui uma ajuda para lembrar ou ensinar como usar o script
+
+    exit "$1" # Envie de forma parametrizada o retorno da função de help. 0 para sucesso e 1 para erro
+
+}
+
+delete_remote() {
+
+    if [ $IS_DELETE_REMOTE -eq 0 ] && 
+       branch_remote_exists "$1" &&
+       spinner "Excluindo a $1 do repositório remoto..." -- git push --quiet --delete origin "$1" > /dev/null 
+    then
+        
+        success "A branch ${BGreen}$1${Color_off} foi excluída do repositório remoto"
+
+    fi
+
+}
+
+delete() {
+
+    if spinner "Excluindo a branch $1..." -- sleep 1 && git branch -D "$1" > /dev/null 
+    then
+    
+        success "A branch ${BGreen}$1${Color_off} foi excluída com sucesso"
+        delete_remote "$1"
+
+    else
+        
+        error "Houve algum problema ao excluir a branch ${BRed}$1${Color_off}"
+        EXIT=1
+    
+    fi
+
+}
+
+ARGS=$(getopt -o "rh" -l "remote,help" -n "branchd" -- "$@")
+
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
+do
+    
+    case "$1" in
+        -r | --remote)
+            IS_DELETE_REMOTE=0 
+            shift;
+        ;;
+        -h | --help)
+            shift; 
+            help 0
+        ;;
+        -- ) 
+            shift;
+            break;
+        ;;
+    esac
+
+done
+
+# Seu script pode começar daqui
+
+if [ ! $# -eq 0 ]
+then
+
+    branchs=( $@ )
+
+elif ! git branch | grep --invert-match "$(git_current_branch)" > /dev/null 
+then
+
+    error "Não existem outras para exclusão"
+    EXIT=1
+
+else
+
+    branchs=( "$(git branch | grep --invert-match '\*' | cut -c 3- | filter)" )
+    
+fi
+
+for branch in ${branchs[@]}
+do
+
+    if [ "$branch" == "$(git_current_branch)" ] 
+    then
+
+        error "Não é possível excluir a branch atual"
+        EXIT=1
+
+    elif branch_exists "$branch"
+    then
+
+        delete "$branch"
+    
+    else
+
+        error "A branch $BRed$branch$Color_off não foi encontrada"
+        EXIT=1
+        
+    fi
+
+done
+
+exit $EXIT
+
+

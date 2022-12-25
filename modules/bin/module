@@ -1,0 +1,79 @@
+#! /usr/bin/env bash
+
+source $XDG_HOME_BIN/utils/base
+
+TYPE_MODULE=""
+TEMPLATE=""
+ARQ=""
+
+help() {
+
+    usage "Crie módulos para o dotfiles usando este comando.
+
+Para um módulo controlado pelo Nix:
+
+*module --nix <pacote>*
+
+Para um módulo controlado pelo *$DOTFILES/init*:
+
+*module --sh <pacote>*
+
+"
+
+    exit $1
+
+}
+
+for param in $@
+do
+    
+    case $param in
+        "--nix") TYPE_MODULE="nix"
+        ;;
+        "--sh") TYPE_MODULE="sh"
+        ;;
+        "--help") help 0
+        ;;
+    esac
+    
+done
+
+if [ $# -gt 2 ] # Caso o seu script tenha mais de um parâmetro, é só informar a quantidade aqui
+then
+        
+    help 1
+
+fi
+
+case $TYPE_MODULE in
+    "nix") TEMPLATE=$DOTFILES/templates/nix
+           ARQ="default.nix"
+    ;;
+    "sh") TEMPLATE=$DOTFILES/templates/sh
+          ARQ="sh"
+    ;;
+    *) help 1
+    ;;
+esac
+
+[[ $2 == --* ]] && help 1
+
+[[ -z $2 ]] && help 1
+
+if [ ! -d $DOTFILES/modules/"$2" ]
+then
+
+    mkdir -p $DOTFILES/modules/"$2"
+    
+else
+        
+    error "Módulo ${BRed}$2${Color_off} já existe."
+    exit 1
+        
+fi
+
+cp $TEMPLATE $DOTFILES/modules/"$2"/$ARQ &&
+success "Módulo ${BGreen}$2${Color_off} criado com sucesso"
+
+code $DOTFILES
+

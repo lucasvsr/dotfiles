@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+if exists docker && ! groups "$USER" | grep docker > /dev/null; 
+then
+
+    info "Configurando o docker para executar sem sudo..." &&
+    sudo usermod -aG docker "$USER" &&
+    su - "$USER" &&
+    success "Docker configurado para executar sem sudo!"
+
+elif exists docker && groups "$USER" | grep docker > /dev/null
+then
+
+    success "$USER é um usuário com acesso ao docker sem sudo"
+    
+fi

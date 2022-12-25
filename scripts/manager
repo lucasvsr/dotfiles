@@ -1,0 +1,98 @@
+#! /bin/env bash
+
+exists() {
+
+    command -v "$1" > /dev/null
+
+}
+
+exists_in_repo() {
+
+    test "$(nala search $1 2> /dev/null)"
+
+}
+
+is_not_installed() {
+
+    test ! "$(dpkg -s $1 2> /dev/null)"
+
+}
+
+is_not_sync() {
+
+    for item in $(cat $DEB_REPO)
+    do
+        
+        [[ $1 = "${item}" ]] && return 1
+        
+    done
+    
+    return 0
+
+}
+
+add_package() {
+
+    if is_not_sync $1; 
+    then
+
+        info "Incluindo o $1 no repositório..." &&
+        echo "$1" >> $DEB_REPO &&
+        sort <<< $(cat $DEB_REPO) > $DEB_REPO &&
+        success "O $1 foi incluído com sucesso!"
+
+    fi
+
+}
+
+remove_package() {
+
+    warn "Removendo o $1 da nuvem..." &&
+    sed "/$1/d" $DEB_REPO >> deb && mv deb $DEB_REPO &&
+    success "O $1 foi removido do repositório."
+
+}
+
+is_git_repo() {
+
+    git rev-parse 2> /dev/null
+
+}
+
+git_current_branch() {
+
+    is_git_repo && git symbolic-ref --short HEAD
+
+}
+
+git_default_branch() {
+
+    if is_git_repo 
+    then
+
+        if [ -f .git/refs/heads/"$(git config --get init.defaultBranch)" ]
+        then
+
+            git config --get init.defaultBranch
+
+        else
+
+            echo master 
+
+        fi
+        
+    fi
+
+}
+
+branch_exists() {
+
+    git branch | grep "$1" > /dev/null
+
+}
+
+branch_remote_exists() {
+
+    git fetch --quiet && git branch --all | grep "remotes/origin/$1" > /dev/null
+
+}

@@ -1,0 +1,64 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+source "$XDG_HOME_BIN"/utils/git_validator
+
+source=$1
+target=$2
+
+help() {
+
+    usage "# Utilitário para realização de merges em repositórios git
+    
+Para usá-lo, basta informar o nome da branch que será mergeada na branch atual." # Coloca aqui uma ajuda para lembrar ou ensinar como usar o script
+
+    exit "$1" # Envie de forma parametrizada o retorno da função de help. 0 para sucesso e 1 para erro
+
+}
+
+update() {
+
+    git checkout --quiet "$1"
+
+    if branch_remote_exists "$1"
+    then
+
+        spinner "Atualizando a branch $1" -- git pull --quiet
+        
+    fi
+
+}
+
+if [ $# -lt 1 ] # Caso o seu script tenha mais de um parâmetro, é só informar a quantidade aqui
+then
+        
+    help 1
+
+fi
+
+for param in $@
+do
+
+    case $param in
+        "--help") help 0 # Por padrão, caso informem o parâmetro --help, chama o help do script
+        ;;
+    esac
+
+done
+
+# Seu script pode começar daqui
+
+if [ -z "$target" ]  
+then
+
+    target=$(git_current_branch)
+        
+fi
+
+update "$target"
+update "$source"
+
+git checkout --quiet "$target" &&
+spinner "Realizando o merge da branch $source com a $target..." -- sleep 2 && git merge --quiet "$source"
+

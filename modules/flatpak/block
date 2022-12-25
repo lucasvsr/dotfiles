@@ -1,0 +1,5 @@
+platform
+pop
+sdk
+org.telegram.desktop.webview
+org.gnome.Boxes.Extension.OsinfoDb

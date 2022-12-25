@@ -1,0 +1,46 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+source "$XDG_HOME_BIN"/utils/git_validator
+
+CURRENT_BRANCH=$(git_current_branch)
+
+help() {
+
+    usage "# Utilitário para criação de branchs feature
+    
+Ao usá-lo, será criada uma branch feature com base na branch atual do repositório." # Coloca aqui uma ajuda para lembrar ou ensinar como usar o script
+
+    exit "$1" # Envie de forma parametrizada o retorno da função de help. 0 para sucesso e 1 para erro
+
+}
+
+if [ $# -lt 1 ] # Caso o seu script tenha mais de um parâmetro, é só informar a quantidade aqui
+then
+        
+    help 1
+
+fi
+
+for param in $@
+do
+
+    case $param in
+        "--help") help 0 # Por padrão, caso informem o parâmetro --help, chama o help do script
+        ;;
+    esac
+
+done
+
+# Seu script pode começar daqui
+
+ for feature in $@
+ do
+
+    git checkout --quiet "$CURRENT_BRANCH"
+    createb "feature/$feature"
+
+ done
+ 
+

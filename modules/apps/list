@@ -1,0 +1,17 @@
+apt-transport-https 
+backintime-qt
+build-essential 
+ca-certificates
+code
+containerd.io
+curl 
+docker-ce
+docker-ce-cli
+docker-compose-plugin
+flatpak  
+gnome-sushi
+gnupg
+lsb-release
+snapd
+ulauncher
+wget

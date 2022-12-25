@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+source $XDG_HOME_BIN/utils/base
+source $XDG_HOME_BIN/utils/manager
+
+
+if ! is_git_repo
+then
+    
+    error "Este comando só pode ser usado em repositórios git"
+    exit 1
+    
+fi

@@ -1,0 +1,78 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+
+DEST=""
+URL=""
+
+help() {
+
+    usage "Função para realizar download de arquivos via cli, modo de uso:
+download <URL> <DIRETORIO>
+
+O diretório não é obrigatório"
+
+    exit 0
+
+}
+
+define_url_dir() {
+
+    if [ -z "$1" ];
+    then
+
+        help
+        
+    fi
+
+    URL=$1
+
+    if [ -d "$2" ]
+    then
+
+        DEST="$2/$(basename $URL)"
+
+    elif [ -z "$2" ]  
+    then
+        
+        DEST="$PWD/$(basename $URL)"
+
+    else
+
+        DEST=$2
+        
+    fi
+
+}
+
+is_downloaded() {
+
+    if [ -f "$DEST" ] 
+    then
+
+        info "$(basename $DEST) já encontra-se no diretório especificado."
+        exit 1
+
+    fi
+
+}
+
+case $1 in
+    "--help") help
+    ;;
+esac
+
+
+define_url_dir $@
+is_downloaded
+
+if spinner "Iniciando o download do arquivo $(basename $DEST)" -- wget -nv -q "$URL" -O "$DEST"; 
+then
+
+    success "${BWhite}$(basename $DEST)${Color_off} foi baixado com sucesso"
+
+else
+
+    error "Houve algum problema ao baixar o $(basename $DEST)"
+
+fi

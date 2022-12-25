@@ -1,0 +1,61 @@
+#! /usr/bin/env bash
+
+source $XDG_HOME_BIN/utils/base
+source $XDG_HOME_BIN/utils/manager
+
+SILENT=1
+
+for param in $@
+do
+    
+    case $param in
+        "--silent") SILENT=0
+        ;;
+    esac
+    
+done
+
+status() {
+
+    local pwd=$(pwd)
+    cd $DOTFILES
+
+	local existe=0
+
+	for file in $(git status --untracked-files=no --porcelain | sed s/^...//);
+	do
+
+		existe=$((existe+1))
+
+	done
+
+    
+
+	if [ $SILENT -gt 0 ] 
+	then
+		
+		[[ $existe -gt 0 ]] && warn "O seguintes arquivos possuem alterações:" && git status --untracked-files=no --porcelain
+		[[ $existe -eq 0 ]] && info "O repositório está atualizado." && return 0
+
+		cd $pwd
+
+	else
+
+		[[ $existe -gt 0 ]]  && return 1
+		[[ $existe -eq 0 ]]  && return 0
+	
+	fi
+
+}
+
+help() {
+
+   usage "Utilitário para verificação do repositório"
+
+}
+
+case "$@" in
+
+	"--help") help ;;
+	*) status ;;
+esac

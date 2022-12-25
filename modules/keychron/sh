@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+
+if [ ! -f /etc/modprobe.d/hid_apple.conf ];
+then
+
+    info "Iniciando a configuração do teclado"
+    echo "options hid_apple fnmode=1" | sudo tee /etc/modprobe.d/hid_apple.conf > /dev/null &&
+    sudo update-initramfs -u -k all &&
+    success "Teclado configurado com sucesso"
+  
+fi
+
+
+

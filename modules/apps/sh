@@ -1,0 +1,66 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+flags="--fix-broken -y"
+DEB_REPO="$DOTFILES/modules/apps/list"
+
+if ! exists nala;
+then
+
+    info "Nala não está instalando"
+
+    if spinner "Instalando o Nala" -- sudo apt install $flags -qq nala ||
+       spinner "Instalando o Nala (versão legada)" -- sudo apt install $flags -qq nala-legacy 
+    then
+
+        success "Nala instalado com sucesso!"
+        
+    fi
+    
+fi
+    
+if exists nala;
+then
+
+    spinner "Iniciando a instalação dos pacotes via Nala" -- sleep 1
+
+    while read -r package
+    do
+
+        if is_not_installed "$package" 
+        then
+
+            sudo nala install $flags "$package"
+
+        elif ! is_not_installed "$package"
+        then
+
+            warn "$package já instalado"
+        
+        else
+            
+            app_repo_not_installed=( "$package" )
+
+        fi
+
+    done < "$DEB_REPO"
+
+    if test -z "${app_repo_not_installed[@]}" 
+    then
+
+        success "Aplicativos do repositório foram instalados com sucesso"
+
+    else
+
+        for package_not_installed in ${app_repo_not_installed[@]}
+        do
+            
+            warn "$package_not_installed não foi instalado"
+
+        done
+        
+    fi
+
+fi

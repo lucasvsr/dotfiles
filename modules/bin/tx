@@ -1,0 +1,49 @@
+#! /usr/bin/env bash
+
+source $XDG_HOME_BIN/utils/base
+
+help() {
+    
+    usage "Utilitário para criação de arquivos executáveis.
+
+Modo de uso: tx <arquivo>
+
+É possível informar o caminho explicito até o arquivo. Caso ele exista, se tornará executável."
+    
+    return 0
+    
+}
+
+create() {
+    
+    local file=$1
+    
+    if [ ! -f $file ]; then
+        
+        touch $file
+        
+    fi
+    
+    chmod 777 $file
+    
+    return 0
+    
+}
+
+touchx() {
+    
+    for file in $@
+    do
+        
+        case $file in
+            "--help") help
+            ;;
+            *) create $file
+            ;;
+        esac
+        
+    done
+    
+}
+
+touchx $@

@@ -1,0 +1,180 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+
+DEF_DIR_INSTALL="$HOME/.local"
+DEF_YEAR="2022"
+DEF_MONTH="09"
+
+conf_value() {
+
+    VAR=$(< "$XDG_CONFIG_DIR"/eclipse/conf grep "$1")
+    ARR=( ${VAR//" = "/ } )
+    VAR=${ARR[1]}
+
+    echo "$VAR"
+
+}
+
+help() {
+    
+    usage "Utilitário para instalação ou execução do Eclipse IDE. Para instalar ou executá-lo, basta usar o comando *eclipse*"
+    exit "$1"
+    
+}
+
+down() {
+
+    ZIP="eclipse-$YEAR-$MONTH.tar.gz"
+
+    local url="https://eclipse.c3sl.ufpr.br/technology/epp/downloads/release/${YEAR}-${MONTH}/R/eclipse-jee-${YEAR}-${MONTH}-R-linux-gtk-x86_64.tar.gz"
+    
+    info "Instalando o Eclipse JEE"
+    "$XDG_HOME_BIN"/download "$url" "$ZIP"
+    
+}
+
+add-application-launcher() {
+    
+    local name="Eclipse IDE for Java EE"
+    local exec="$DIR_INSTALL/eclipse/eclipse"
+    local icon="$DIR_INSTALL/eclipse/icon.xpm"
+    
+    echo -e "[Desktop Entry]\nVersion=1.0\nName=${name}\nExec=env GTK_IM_MODULE=ibus ${exec}\nIcon=${icon}\nType=Application\nCategories=Application;Development\nStartupWMClass=Eclipse\nEncoding=UTF-8\nTerminal=false" >> $HOME/.local/share/applications/Eclipse.desktop
+    
+}
+
+mount_archive_config() {
+
+    mkdir -p "$XDG_CONFIG_DIR"/eclipse
+
+    {
+
+     echo "DIR_INSTALL = $DIR_INSTALL"
+     echo "YEAR = $YEAR"
+     echo "MONTH = $MONTH"
+     echo "DATE_INSTALL = $(date +%d/%m/%Y)" 
+
+    } > "$XDG_CONFIG_DIR"/eclipse/conf
+
+}
+
+build() {
+
+    ZIP="eclipse-$YEAR-$MONTH.tar.gz"
+    mount_archive_config
+    
+    "$XDG_HOME_BIN"/ex "$ZIP" "$DIR_INSTALL" > /dev/null &&
+    mv "$ZIP" /tmp/ &&
+    add-application-launcher || error "Houve algum problema ao montar a IDE"
+    
+}
+
+uninstall() {
+
+    DIR_INSTALL=$(conf_value "DIR_INSTALL")
+
+    rm -rf "$DIR_INSTALL"/eclipse &&
+    rm -rf "$DIR_INSTALL"/share/applications/Eclipse.desktop &&
+    rm -rf "$XDG_CONFIG_DIR"/eclipse &&
+    success "Eclipse desinstalado com sucesso"
+    exit $?
+    
+}
+
+version() {
+
+    YEAR=$(conf_value YEAR)
+    MONTH=$(conf_value MONTH)
+
+    info "Eclipse Java EE v$YEAR/$MONTH"
+
+    exit
+
+}
+
+ARGS=$(getopt -o "vuhy:m:D:" -l "dir-install:,uninstall,version,help,month:,year:" -n "eclipse" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
+
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
+do
+    
+    case "$1" in
+        -h | --help)
+            shift;
+            help 0
+        ;;
+        -y | --year) 
+            YEAR="$2" 
+            shift 2; 
+            continue; 
+        ;;
+        -m | --month)
+            MONTH="$2"
+            shift 2; 
+            continue; 
+        ;;
+        -u | --uninstall) 
+            uninstall;
+        ;;
+        -D | --dir-install)
+            DIR_INSTALL="$2"
+            shift 2; 
+            continue; 
+        ;;
+        -v | --version)
+            version; 
+        ;;
+        --)
+            shift;
+            break;
+        ;;
+        *) break
+        ;; 
+    esac
+
+done
+
+if test -z "$YEAR" 
+then
+        
+    YEAR=$DEF_YEAR
+
+fi
+
+if test -z "$MONTH" 
+then
+        
+    MONTH=$DEF_MONTH
+
+fi
+
+if test -z "$DIR_INSTALL" 
+then
+        
+    DIR_INSTALL=$DEF_DIR_INSTALL
+
+fi
+
+if [ ! -d "$DIR_INSTALL"/eclipse ];
+then
+
+    down &&
+    build &&
+    success "Eclipse instalado com sucesso!" || error "Houve algum problema na instalação do Eclipse"
+
+else
+
+    if ! test -f "$XDG_CONFIG_DIR"/eclipse/conf 
+    then
+
+        mount_archive_config
+        
+    fi
+
+    "$DIR_INSTALL"/eclipse/eclipse
+
+fi
+

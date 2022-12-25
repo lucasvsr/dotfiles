@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+# source "$XDG_HOME_BIN"/utils/git_validator - Ative caso o utilitário manipule um repositório git
+
+help() {
+
+    usage "" # Coloca aqui uma ajuda para lembrar ou ensinar como usar o script
+
+    exit "$1" # Envie de forma parametrizada o retorno da função de help. 0 para sucesso e 1 para erro
+
+}
+
+ARGS=$(getopt -o "h" -l "help" -n "<bin>" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
+
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
+do
+    
+    case "$1" in
+        -h | --help) 
+            shift; # O shift é importante! Ele retira o parâmetro validado para que o prṍximo seja lido. No caso do help, deve ser usado antes, mas nos demais casos vc deve colocar após o processamento
+            help 0 
+        ;;
+        --)
+            shift;
+            break;
+        ;;
+    esac
+
+done
+
+# Valide os parâmetros obrigatórios antes de iniciar o processamento!!
+
+# Seu script pode começar daqui
+

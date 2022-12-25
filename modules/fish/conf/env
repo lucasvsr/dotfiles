@@ -1,0 +1,5 @@
+# Exports
+set -gx EDITOR "spacevim"
+set -gx NIX_PATH "$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels:$NIX_PATH"
+set -gx DEB_REPO "$DOTFILES/modules/apps/list"
+

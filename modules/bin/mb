@@ -1,0 +1,47 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+
+BIN_TEMPLATE=$DOTFILES/templates/bin
+
+help() {
+
+    usage "Utilitário para criação de binários. Informe o nome(s) do(s) binário(s) que queira criar."
+
+    exit 0
+
+}
+
+if [ $# -lt 1 ]
+then
+        
+    help
+
+fi
+
+for param in $@
+do
+
+    case $param in
+        "--help") help
+        ;;
+    esac
+
+done
+
+for bin in $@
+do
+
+    if [ ! -f "$XDG_HOME_BIN"/"$bin" ] 
+    then
+
+        cp "$BIN_TEMPLATE" "$XDG_HOME_BIN"/"$bin"
+        sed -i "s|<bin>|$bin|g" "$XDG_HOME_BIN"/"$bin"
+        chmod 777 "$XDG_HOME_BIN"/"$bin"
+        code "$XDG_HOME_BIN"/"$bin"
+        
+    fi  
+
+done
+

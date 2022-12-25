@@ -1,0 +1,28 @@
+#! /usr/bin/env bash
+
+source "$SCRIPTS"/utils
+source "$SCRIPTS"/manager
+
+if test -z "$DOTSHELL" 
+then
+
+    DOTSHELL=fish
+    
+fi
+
+if exists "$DOTSHELL" && [ ! "$SHELL" = "$(which $DOTSHELL)" ]; 
+then
+
+    info "Configurando o shell padrão"
+
+    if ! grep "$(which $DOTSHELL)" /etc/shells > /dev/null
+    then
+
+        which "$DOTSHELL" | sudo tee -a /etc/shells > /dev/null
+        
+    fi
+
+    sudo chsh "$USER" -s "$(which $DOTSHELL)" &&
+    success "O $DOTSHELL é o shell padrão"
+    
+fi

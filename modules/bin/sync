@@ -1,0 +1,121 @@
+#! /usr/bin/env bash
+
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
+
+help() {
+
+   usage "Utilitário para sincronização do repositório"
+   exit "$1"
+
+}
+
+sync_flatpaks() {
+
+    local BLOCK_LIST
+
+    while read -r item
+    do
+
+        if [ -z "$BLOCK_LIST" ] # Se a variável estiver vazia
+        then
+            
+            BLOCK_LIST=$item
+
+        else # Do contrário
+            
+            BLOCK_LIST="$BLOCK_LIST|$item"
+
+        fi
+
+    done < "$DOTFILES"/modules/flatpak/block
+
+    flatpak list --columns=application | ag -vi "$BLOCK_LIST" | tee "$DOTFILES"/modules/flatpak/apps > /dev/null
+    
+}
+
+sync_dconf() {
+
+    dconf dump /org/gnome/desktop/wm/keybindings/ > "$DOTFILES"/modules/gnome/keybinds/default.conf
+    dconf dump /org/gnome/settings-daemon/plugins/media-keys/ > "$DOTFILES"/modules/gnome/keybinds/personal.conf
+    dconf dump /org/gnome/shell/keybindings/ > "$DOTFILES"/modules/gnome/keybinds/shell.conf
+    dconf dump /org/gnome/desktop/input-sources/ > "$DOTFILES"/modules/gnome/keybinds/inputs.conf
+    
+}
+
+is_updated() {
+
+    spinner "Verificando se há alterações na nuvem" -- git fetch --quiet > /dev/null && 
+    cmp -s "$DOTFILES"/.git/refs/heads/"$(git symbolic-ref --short HEAD)" "$DOTFILES"/.git/refs/remotes/origin/"$(git symbolic-ref --short HEAD)"
+
+}
+
+pull() {
+
+    if confirm "Existem atualizações. Deseja puxá-las e aplicá-las?" 
+    then
+
+        spinner "Iniciando a sincronia..." -- git pull --quiet &&
+        success "Sincronização concluída"
+        warn "Aplicando atualizações" &&
+        bash "$DOTFILES"/init
+        
+    fi
+
+}
+
+push() {
+
+    git commit --quiet -m "Atualizando" 1> /dev/null 2> /dev/null &&
+    spinner "Sincronizando alterações locais..." -- git push --quiet
+
+}
+
+ARGS=$(getopt -o "h" -l "help" -n "sync" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
+
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
+do
+    
+    case "$1" in
+        -h | --help) 
+            shift;
+            help 0 
+        ;;
+        --)
+            shift;
+            break;
+        ;;
+    esac
+
+done
+    
+pwd=$(pwd)
+
+cd "$DOTFILES" || exit
+
+sync_dconf
+sync_flatpaks
+hostadd --silent
+
+git add . 1>/dev/null 2>/dev/null
+
+if ! is_updated 
+then
+
+    pull
+
+fi
+
+if ! status --silent # O binário de status retorna 1 caso tenha alterações e 0 quando não tem.
+then
+
+    push
+
+fi
+
+success "Sincronização concluída"
+
+cd "$pwd" || exit
