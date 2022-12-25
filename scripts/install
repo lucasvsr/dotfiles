@@ -59,7 +59,7 @@ put() {
 
 install git
 _gh
-put "alias clone='gh auth login && gh repo clone dotfiles $HOME/.config/dotfiles'" "$HOME"/.bash_aliases 
+put "alias clone='gh auth login && gh repo clone lucasvsr/dotfiles $HOME/.config/dotfiles'" "$HOME"/.bash_aliases 
 put "alias setup='bash $HOME/.config/dotfiles/init'" "$HOME"/.bash_aliases
 
 if test -f "$HOME"/.bashrc
