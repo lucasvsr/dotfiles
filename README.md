@@ -1,6 +1,6 @@
 
 # dotfiles
-Repositório de arquivos de configuração do meu ambiente
+Repositório de arquivos de configuração do meu ambiente.
 
 ## Preparação do ambiente
 Utilize o comando abaixo para instalar as dependências da instalação:
