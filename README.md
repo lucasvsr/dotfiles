@@ -7,7 +7,7 @@ Utilize o comando abaixo para instalar as dependências da instalação:
 
 ```console
 
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/lucasvsr/dotfiles/main/.config/build/scripts/install)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/lucasvsr/dotfiles/main/scripts/install)"
 
 ```
 
