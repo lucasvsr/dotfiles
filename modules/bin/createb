@@ -53,6 +53,6 @@ then
 
 else
 
-    error "A $BRed$1$Color_off já existe"
+    error "A branch $BRed$1$Color_off já existe"
 
 fi
