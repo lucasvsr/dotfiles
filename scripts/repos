@@ -91,10 +91,9 @@ _vscode() {
 if ! exists add-apt-repository 
 then
 
-    sudo apt install -y software-properties-common
+    sudo apt install -y -qq software-properties-common
 
 fi
-
 
 _docker
 _nala

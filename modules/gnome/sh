@@ -30,7 +30,7 @@ convert_conf() {
 
 info_not_supported() {
 
-    error "Não é possível atribuir os atalhos em ambientes que não estejam rodando o gnome"
+    error "Não é possível atribuir os atalhos em ambientes que não estejam rodando o Gnome"
 
     exit 1
 
