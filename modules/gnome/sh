@@ -28,6 +28,16 @@ convert_conf() {
 
 }
 
+info_not_supported() {
+
+    error "Não é possível atribuir os atalhos em ambientes que não estejam rodando o gnome"
+
+    exit 1
+
+}
+
+test "$(echo "$XDG_CURRENT_DESKTOP" | grep -i "gnome")" || info_not_supported
+
 for conf in "$DOTFILES"/modules/gnome/keybinds/*
 do
 
