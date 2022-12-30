@@ -41,12 +41,7 @@ put() {
     local value=$1
     local file=$2
 
-    if [ ! -f "$file" ]
-    then
-
-      touch "$file"
-
-    fi
+    test -f "$file" || touch "$file"
   
     if ! grep "$value" "$file" > /dev/null
     then
