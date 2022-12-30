@@ -48,7 +48,6 @@
     ./environment
     ./fish
     ./git
-    ./gnome
     ./nix
     ./starship
     ./tmux
