@@ -26,7 +26,7 @@ then
 
     spinner "Iniciando a instalação dos pacotes via Nala" -- sleep 1
 
-    while read -r package
+    while IFS=$'\n' read -r package
     do
 
         if is_not_installed "$package" 

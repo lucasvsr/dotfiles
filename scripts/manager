@@ -1,5 +1,7 @@
 #! /bin/env bash
 
+source "$SCRIPTS"/utils
+
 exists() {
 
     command -v "$1" > /dev/null
@@ -18,28 +20,19 @@ is_not_installed() {
 
 }
 
-is_not_sync() {
+is_sync() {
 
-    for item in $(cat $DEB_REPO)
-    do
-        
-        [[ $1 = "${item}" ]] && return 1
-        
-    done
-    
-    return 0
+    cat "$DEB_REPO" | grep -w "$1" > /dev/null
 
 }
 
 add_package() {
 
-    if is_not_sync $1; 
+    if ! is_sync "$1" && exists "$1"; 
     then
 
-        info "Incluindo o $1 no repositório..." &&
-        echo "$1" >> $DEB_REPO &&
-        sort <<< $(cat $DEB_REPO) > $DEB_REPO &&
-        success "O $1 foi incluído com sucesso!"
+        echo "$1" >> "$DEB_REPO"
+        sort_file "$DEB_REPO"
 
     fi
 
@@ -47,9 +40,7 @@ add_package() {
 
 remove_package() {
 
-    warn "Removendo o $1 da nuvem..." &&
-    sed "/$1/d" $DEB_REPO >> deb && mv deb $DEB_REPO &&
-    success "O $1 foi removido do repositório."
+    sed "/$1/d" "$DEB_REPO" >> deb && mv deb "$DEB_REPO"
 
 }
 

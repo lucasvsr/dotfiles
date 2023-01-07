@@ -32,10 +32,10 @@ then
     info "Iniciando a instalação dos pacotes via home-manager (Nix)"
     sleep 1
 
-    if home-manager --file "$DOTFILES"/home.nix switch -b backup &> /dev/null
+    if home-manager --file "$DOTFILES"/home.nix switch -b backup &> /dev/null 
     then
-
-        success "Pacotes do home-manager instalados e configurados"
+        
+        success "Pacotes home-manager instalados com sucesso"
 
     fi
     

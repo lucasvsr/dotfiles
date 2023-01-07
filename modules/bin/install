@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source $XDG_HOME_BIN/utils/base
-source $XDG_HOME_BIN/utils/manager
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
 
 declare -a PACKAGES_TO_INSTALL
 declare -a PACKAGES_VALID_TO_INSTALL
@@ -11,10 +11,10 @@ build_array_valid() {
     for package in $@
     do
         
-        if exists_in_repo $package;
+        if exists_in_repo "$package";
         then
 
-            PACKAGES_TO_INSTALL+=($package)
+            PACKAGES_TO_INSTALL+=( "$package" )
 
         else
             
@@ -32,10 +32,10 @@ build_array_with_not_installed() {
     for valid_package in ${PACKAGES_TO_INSTALL[@]}
     do
         
-        if is_not_installed $valid_package; 
+        if is_not_installed "$valid_package"; 
         then
 
-            PACKAGES_VALID_TO_INSTALL+=($valid_package)
+            PACKAGES_VALID_TO_INSTALL+=( "$valid_package" )
             info "O pacote $valid_package foi encontrado."
             
         fi
@@ -46,9 +46,14 @@ build_array_with_not_installed() {
 
 install() {
 
-    warn "Iniciando a instalação dos pacotes"
+    if test ${#PACKAGES_VALID_TO_INSTALL[@]} -gt 0 
+    then
 
-    [[ "${#PACKAGES_VALID_TO_INSTALL[@]}" -gt 0 ]] && sudo nala install -y "${PACKAGES_VALID_TO_INSTALL[@]}";
+        warn "Iniciando a instalação dos pacotes"
+        ask_for_sudo "Informe sua senha para iniciar a instalação: "
+        sudo nala install -y "${PACKAGES_VALID_TO_INSTALL[@]}"
+        
+    fi
 
 }
 
@@ -57,7 +62,7 @@ valid_install() {
     for installed_package in ${PACKAGES_VALID_TO_INSTALL[@]}
     do
         
-        add_package $installed_package
+        add_package "$installed_package"
 
     done
 
@@ -70,27 +75,32 @@ help() {
 
 }
 
-main() {
+ARGS=$(getopt -o "h" -l "help" -n "install" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
 
-    build_array_valid $@
-    build_array_with_not_installed
-    install
-    valid_install
-    sync
-    
-}
+eval set -- "$ARGS"
+unset ARGS
 
-for entry in $@
+while true; 
 do
-
-    case $entry in
-        "--help") help
+    
+    case "$1" in
+        -h | --help) 
+            shift; # O shift é importante! Ele retira o parâmetro validado para que o prṍximo seja lido. No caso do help, deve ser usado antes, mas nos demais casos vc deve colocar após o processamento
+            help 0 
+        ;;
+        --)
+            shift;
+            break;
         ;;
     esac
 
 done
 
-main $@
+build_array_valid $@
+build_array_with_not_installed
+install
+valid_install
+sync -m "Pacotes instalados: $(array_to_str ${PACKAGES_VALID_TO_INSTALL[@]})"
 
 
 

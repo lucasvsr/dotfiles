@@ -76,7 +76,9 @@ On_IWhite='\033[0;107m'  # White
 # }}}
 
 msg() {
+
     printf '%b\n' "$1" >&2
+
 }
 
 success() {
@@ -138,5 +140,54 @@ confirm() {
 spinner() {
 
     gum spin --spinner.foreground "#7C90A0" --spinner.bold --spinner line --title.bold --title " $@" # O espaço é importante
+
+}
+
+ask_for_sudo() {
+
+    local prompt=${1:-"Informe sua senha para confirmar a operação: "}
+
+    gum input --prompt.bold --prompt "$prompt" --password --placeholder "A senha não será exibida" | sudo --prompt="" -S -v &> /dev/null || 
+    (error "Senha incorreta" && ask_for_sudo "$prompt")
+
+    while true; 
+    do 
+        sudo -n true; 
+        sleep 60; kill -0 "$$" || exit; 
+    done 2>/dev/null &
+
+}
+
+sort_file() {
+
+    local file=$1
+
+    < "$file" sort > "$file"_tmp && mv "$file"_tmp "$file"
+
+}
+
+array_to_str() {
+
+    local array=( $@ )
+    local list
+
+    for value in ${array[@]}
+    do
+        
+        if [ -z "$list" ] # Se a variável estiver vazia
+        then
+            
+            list=$value
+
+        else # Do contrário
+            
+            list="$list, $value"
+
+        fi
+
+    done
+
+    echo "$list"
+    
 
 }

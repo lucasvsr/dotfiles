@@ -5,7 +5,7 @@ source "$XDG_HOME_BIN"/utils/manager
 source "$XDG_HOME_BIN"/utils/git_validator
 
 source=$1
-target=$2
+target=${2:-$(git_current_branch)}
 
 help() {
 
@@ -48,13 +48,6 @@ do
 done
 
 # Seu script pode começar daqui
-
-if [ -z "$target" ]  
-then
-
-    target=$(git_current_branch)
-        
-fi
 
 update "$target"
 update "$source"

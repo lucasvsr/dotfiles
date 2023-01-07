@@ -7,16 +7,13 @@ apply() {
 
     local arq=$1
     local dump=$2
-    local config
     
-    config=$(basename "$arq" | tr "_" ".")
-
     if exists dconf &&
        dconf dump "$dump" > /dev/null &&
        dconf load "$dump" < "$arq"
     then
 
-        success "Configuração definida em $config aplicada com sucesso"
+        success "Configuração definida em $dump aplicada com sucesso"
 
     fi
 
@@ -28,24 +25,19 @@ convert_conf() {
 
 }
 
-info_not_supported() {
+if echo "$XDG_CURRENT_DESKTOP" | grep -i "GNOME" > /dev/null 
+then
 
-    error "Não é possível atribuir os atalhos em ambientes que não estejam rodando o Gnome"
+    for conf in "$DOTFILES"/modules/gnome/keybinds/*
+    do
 
-    exit 1
+        apply "$conf" "$(convert_conf "$(basename "$conf")")"
 
-}
+    done
 
-test "$(echo "$XDG_CURRENT_DESKTOP" | grep -i "gnome")" || info_not_supported
+fi
 
-for conf in "$DOTFILES"/modules/gnome/keybinds/*
-do
 
-    path=$(convert_conf "$(basename "$conf")")
-
-    apply "$conf" "$path"
-
-done
 
 
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source $XDG_HOME_BIN/utils/base
+source "$XDG_HOME_BIN"/utils/base
 
 TYPE_MODULE=""
 TEMPLATE=""
@@ -16,64 +16,81 @@ Para um módulo controlado pelo Nix:
 
 Para um módulo controlado pelo *$DOTFILES/init*:
 
-*module --sh <pacote>*
+*module --sh <pacote>*"
 
-"
-
-    exit $1
+    exit "$1"
 
 }
 
-for param in $@
+ARGS=$(getopt -o "hns" -l "help,nix,sh" -n "module" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
+
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
 do
     
-    case $param in
-        "--nix") TYPE_MODULE="nix"
+    case "$1" in
+        -h | --help) 
+            shift; # O shift é importante! Ele retira o parâmetro validado para que o prṍximo seja lido. No caso do help, deve ser usado antes, mas nos demais casos vc deve colocar após o processamento
+            help 0 
         ;;
-        "--sh") TYPE_MODULE="sh"
+        -n | --nix)
+            shift;
+            TYPE_MODULE="nix"
         ;;
-        "--help") help 0
+        -s | --sh)
+            shift;
+            TYPE_MODULE="sh"
+        ;;
+        --)
+            shift;
+            break;
         ;;
     esac
-    
+
 done
 
-if [ $# -gt 2 ] # Caso o seu script tenha mais de um parâmetro, é só informar a quantidade aqui
+if [ -n $@ ]
 then
         
+    case $TYPE_MODULE in
+        "nix") TEMPLATE="$DOTFILES"/templates/nix
+            ARQ="default.nix"
+        ;;
+        "sh") TEMPLATE="$DOTFILES"/templates/sh
+            ARQ="sh"
+        ;;
+        *) help 1
+        ;;
+    esac
+
+    for module in $@
+    do
+        
+        if [ ! -d "$DOTFILES"/modules/"$module" ]
+        then
+
+            mkdir -p "$DOTFILES"/modules/"$module"
+        
+        else
+            
+            error "Módulo ${BRed}$module${Color_off} já existe."
+            exit 1
+            
+        fi
+
+        cp "$TEMPLATE" "$DOTFILES"/modules/"$module"/$ARQ &&
+        success "Módulo ${BGreen}$2${Color_off} criado com sucesso"
+
+        code "$DOTFILES"
+
+    done
+
+else
+
     help 1
 
 fi
 
-case $TYPE_MODULE in
-    "nix") TEMPLATE=$DOTFILES/templates/nix
-           ARQ="default.nix"
-    ;;
-    "sh") TEMPLATE=$DOTFILES/templates/sh
-          ARQ="sh"
-    ;;
-    *) help 1
-    ;;
-esac
-
-[[ $2 == --* ]] && help 1
-
-[[ -z $2 ]] && help 1
-
-if [ ! -d $DOTFILES/modules/"$2" ]
-then
-
-    mkdir -p $DOTFILES/modules/"$2"
-    
-else
-        
-    error "Módulo ${BRed}$2${Color_off} já existe."
-    exit 1
-        
-fi
-
-cp $TEMPLATE $DOTFILES/modules/"$2"/$ARQ &&
-success "Módulo ${BGreen}$2${Color_off} criado com sucesso"
-
-code $DOTFILES
 

@@ -13,8 +13,15 @@ do
 
 done
 
+ask_for_sudo "Informe sua senha para iniciar a instalação dos módulos: "
+
 spinner "Iniciando a instalação dos módulos" -- sleep 2
 
-find "$DOTFILES"/modules/*/sh -type f -exec bash {} \;
+for module in "$DOTFILES"/modules/*/sh
+do
+
+    source "$module"
+
+done
 
 success "Instalação concluída"

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-source $XDG_HOME_BIN/utils/base
-source $XDG_HOME_BIN/utils/manager
+source "$XDG_HOME_BIN"/utils/base
+source "$XDG_HOME_BIN"/utils/manager
 
 declare -a PACKAGES_TO_UNINSTALL
 
@@ -10,10 +10,10 @@ build_array_valid() {
     for package in $@
     do
         
-        if ! is_not_installed $package;
+        if ! is_not_installed "$package";
         then
 
-            PACKAGES_TO_UNINSTALL+=($package)
+            PACKAGES_TO_UNINSTALL+=( "$package" )
             info "O pacote $package será removido."
 
         else
@@ -28,9 +28,15 @@ build_array_valid() {
 
 remove() {
 
-    [[ "${#PACKAGES_TO_UNINSTALL[@]}" -gt 0 ]] && 
-    warn "Iniciando a remoção dos pacotes" && 
-    sudo nala purge -y "${PACKAGES_TO_UNINSTALL[@]}";
+    if test ${#PACKAGES_TO_UNINSTALL[@]} -gt 0
+    then
+
+        warn "Iniciando a remoção dos pacotes"
+        ask_for_sudo "Informe sua senha para iniciar a remoção: "
+        sudo nala purge -y "${PACKAGES_TO_UNINSTALL[@]}";
+
+    fi
+    
 
 }
 
@@ -39,36 +45,41 @@ valid_uninstall() {
     for uninstalled_package in ${PACKAGES_TO_UNINSTALL[@]}
     do
         
-        remove_package $uninstalled_package
+        remove_package "$uninstalled_package"
 
     done
-
-}
-
-main() {
-
-    build_array_valid $@
-    remove
-    valid_uninstall
-    sync
 
 }
 
 help() {
 
     usage "Utilitário para desinstalação e sincronização de pacotes. Exemplo de uso: remove <pacote>"
-    exit
+    exit "$1"
 
 }
 
-for entry in $@
-do
+ARGS=$(getopt -o "h" -l "help" -n "remove" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
 
-    case $entry in
-        "--help") help
+eval set -- "$ARGS"
+unset ARGS
+
+while true; 
+do
+    
+    case "$1" in
+        -h | --help) 
+            shift; # O shift é importante! Ele retira o parâmetro validado para que o prṍximo seja lido. No caso do help, deve ser usado antes, mas nos demais casos vc deve colocar após o processamento
+            help 0 
+        ;;
+        --)
+            shift;
+            break;
         ;;
     esac
 
 done
 
-main $@
+build_array_valid $@
+remove
+valid_uninstall
+sync -m "Pacotes removidos: $(array_to_str ${PACKAGES_TO_UNINSTALL[@]})"

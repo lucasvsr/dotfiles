@@ -15,10 +15,7 @@ then
 
     spinner "Iniciando a instalação dos pacotes flatpak" -- sleep 1
 
-    oldIFS=$IFS # mantém o separador de campo
-    IFS=$'\n' # novo separador de campo, o caractere de fim de linha
-
-    while read -r app
+    while IFS=$'\n' read -r app
     do
 
         if ! flatpak list --columns=application | grep -i "$app" > /dev/null &&
@@ -39,8 +36,6 @@ then
         fi
 
     done < "$DOTFILES"/modules/flatpak/apps
-
-    IFS=$oldIFS
 
     if test -z "${flatpak_not_installed[@]}" 
     then

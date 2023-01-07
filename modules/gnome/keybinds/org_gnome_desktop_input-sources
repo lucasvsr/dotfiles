@@ -1,6 +1,6 @@
 [/]
 current=uint32 0
-mru-sources=[('xkb', 'br'), ('xkb', 'us')]
+mru-sources=[('xkb', 'us'), ('xkb', 'br')]
 per-window=false
-sources=[('xkb', 'br'), ('xkb', 'us')]
+sources=[('xkb', 'us+intl')]
 xkb-options=@as []

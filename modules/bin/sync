@@ -36,10 +36,14 @@ sync_flatpaks() {
 
 sync_dconf() {
 
-    dconf dump /org/gnome/desktop/wm/keybindings/ > "$DOTFILES"/modules/gnome/keybinds/default.conf
-    dconf dump /org/gnome/settings-daemon/plugins/media-keys/ > "$DOTFILES"/modules/gnome/keybinds/personal.conf
-    dconf dump /org/gnome/shell/keybindings/ > "$DOTFILES"/modules/gnome/keybinds/shell.conf
-    dconf dump /org/gnome/desktop/input-sources/ > "$DOTFILES"/modules/gnome/keybinds/inputs.conf
+    for conf in "$DOTFILES"/modules/gnome/keybinds/*
+    do
+        
+        dconf dump "$(echo /"$(basename $conf)"/ | tr "_" "/")" > "$conf"
+
+    done
+
+    busctl --user call org.gnome.Shell /io/elhan/ExtensionsSync io.elhan.ExtensionsSync save
     
 }
 
@@ -66,12 +70,14 @@ pull() {
 
 push() {
 
-    git commit --quiet -m "Atualizando" 1> /dev/null 2> /dev/null &&
+    local message=${1:-"Atualizando"}
+
+    git commit --quiet -m "$message" 1> /dev/null 2> /dev/null &&
     spinner "Sincronizando alterações locais..." -- git push --quiet
 
 }
 
-ARGS=$(getopt -o "h" -l "help" -n "sync" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
+ARGS=$(getopt -o "hm:" -l "help,message:" -n "sync" -- "$@") # Adicione aqui o parametro que deseja adicionar ao binário. "<param>:" indica que ele pode ter um valor 
 
 eval set -- "$ARGS"
 unset ARGS
@@ -83,6 +89,11 @@ do
         -h | --help) 
             shift;
             help 0 
+        ;;
+        -m | --message)
+            MESSAGE=$2
+            shift 2;
+            continue;
         ;;
         --)
             shift;
@@ -98,23 +109,13 @@ cd "$DOTFILES" || exit
 
 sync_dconf
 sync_flatpaks
+hostadd --silent
 
 git add . 1>/dev/null 2>/dev/null
 
-if ! is_updated 
-then
+is_updated || pull
+status --silent || push "$MESSAGE"
 
-    pull
-
-fi
-
-if ! status --silent # O binário de status retorna 1 caso tenha alterações e 0 quando não tem.
-then
-
-    push
-
-fi
-
-success "Sincronização concluída"
+spinner "Sincronização concluída" -- sleep 1
 
 cd "$pwd" || exit
