@@ -109,7 +109,6 @@ cd "$DOTFILES" || exit
 
 sync_dconf
 sync_flatpaks
-hostadd --silent
 
 git add . 1>/dev/null 2>/dev/null
 
