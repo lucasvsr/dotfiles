@@ -17,7 +17,7 @@ install() {
         if ! exists "$package"
         then
 
-            $pac --fix-broken install -y -qq "$package" 
+            $pac "$package" 
 
         fi
 
