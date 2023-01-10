@@ -10,10 +10,10 @@ APPS="$DOTFILES/modules/apps/list"
 
 install() {
 
-    if grep "\--aur" "$1" > /dev/null && exists yay
+    if echo "$1" | grep "AUR" > /dev/null && exists yay
     then
 
-        $yay "$(sed -i "s|--aur||g" "$1")"
+        $yay "${1//AUR/}"
 
     else
 

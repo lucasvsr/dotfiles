@@ -1,9 +1,9 @@
-backintime --aur
-backintime-cli --aur
+backintime AUR
+backintime-cli AUR
 code
 docker
 docker-compose
 flatpak
 sushi  
-snapd --aur
-ulauncher --aur
+snapd AUR
+ulauncher AUR
