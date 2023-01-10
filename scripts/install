@@ -5,7 +5,7 @@ pac="sudo pacman $flags"
 
 exists() {
 
-    type "$1" > /dev/null
+    which "$1" > /dev/null
 
 }
 
