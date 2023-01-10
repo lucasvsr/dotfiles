@@ -41,7 +41,7 @@ put() {
 
 }
 
-test -d "$HOME"/.config/dotfiles && exit
+test -d "$HOME"/.config/dotfiles && return
 
 install git github-cli
 put "alias clone='gh auth login && gh repo clone lucasvsr/dotfiles $HOME/.config/dotfiles'" "$HOME"/.bash_aliases 
