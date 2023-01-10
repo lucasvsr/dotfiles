@@ -1,17 +1,9 @@
-apt-transport-https 
-backintime-qt
-build-essential 
-ca-certificates
+backintime --aur
+backintime-cli --aur
 code
-containerd.io
-curl 
-docker-ce
-docker-ce-cli
-docker-compose-plugin
-flatpak  
-gnome-sushi
-gnupg
-lsb-release
-snapd
-ulauncher
-wget
+docker
+docker-compose
+flatpak
+sushi  
+snapd --aur
+ulauncher --aur

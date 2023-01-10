@@ -3,64 +3,72 @@
 source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
 
-flags="--fix-broken -y"
-DEB_REPO="$DOTFILES/modules/apps/list"
+flags="-S --noconfirm --needed"
+pac="sudo pacman $flags"
+yay="yay $flags"
+APPS="$DOTFILES/modules/apps/list"
 
-if ! exists nala;
-then
+install() {
 
-    info "Nala não está instalando"
-
-    if spinner "Instalando o Nala" -- sudo apt install $flags -qq nala ||
-       spinner "Instalando o Nala (versão legada)" -- sudo apt install $flags -qq nala-legacy 
+    if grep "\--aur" "$1" > /dev/null && exists yay
     then
 
-        success "Nala instalado com sucesso!"
-        
-    fi
-    
-fi
-    
-if exists nala;
-then
-
-    spinner "Iniciando a instalação dos pacotes via Nala" -- sleep 1
-
-    while IFS=$'\n' read -r package
-    do
-
-        if is_not_installed "$package" 
-        then
-
-            sudo nala install $flags "$package"
-
-        elif ! is_not_installed "$package"
-        then
-
-            warn "$package já instalado"
-        
-        else
-            
-            app_repo_not_installed=( "$package" )
-
-        fi
-
-    done < "$DEB_REPO"
-
-    if test -z "${app_repo_not_installed[@]}" 
-    then
-
-        success "Aplicativos do repositório foram instalados com sucesso"
+        $yay "$1"
 
     else
 
-        for package_not_installed in ${app_repo_not_installed[@]}
-        do
-            
-            warn "$package_not_installed não foi instalado"
+        $pac "$1"
 
-        done
-        
     fi
 
+}
+
+if ! exists yay;
+then
+
+    cd "$HOME" || exit
+    git clone https://aur.archlinux.org/yay.git
+    cd yay || exit
+    makepkg -si
+    sudo rm -r "$HOME"/yay
+    
+fi
+    
+spinner "Iniciando a instalação dos pacotes" -- sleep 1
+
+while IFS=$'\n' read -r package
+do
+
+    if is_not_installed "$package" 
+    then
+
+        install "$package"
+
+    elif ! is_not_installed "$package"
+    then
+
+        warn "$package já instalado"
+    
+    else
+        
+        app_repo_not_installed=( "$package" )
+
+    fi
+
+done < "$APPS"
+
+if test -z "${app_repo_not_installed[@]}" 
+then
+
+    success "Aplicativos do repositório foram instalados com sucesso"
+
+else
+
+    for package_not_installed in ${app_repo_not_installed[@]}
+    do
+        
+        warn "$package_not_installed não foi instalado"
+
+    done
+    
 fi

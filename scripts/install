@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+flags="-S --noconfirm --needed"
+pac="sudo pacman $flags"
+
 exists() {
 
     type "$1" > /dev/null
@@ -14,25 +17,11 @@ install() {
         if ! exists "$package"
         then
 
-            sudo apt --fix-broken install -y -qq "$package" 
+            $pac --fix-broken install -y -qq "$package" 
 
         fi
 
     done
-
-}
-
-_gh() {
-
-    if ! exists gh && exists curl
-    then
-
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && 
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update -y -qq
-        install gh
-
-    fi
 
 }
 
@@ -52,10 +41,12 @@ put() {
 
 }
 
-install git
+install git github-cli
 _gh
 put "alias clone='gh auth login && gh repo clone lucasvsr/dotfiles $HOME/.config/dotfiles'" "$HOME"/.bash_aliases 
 put "alias setup='bash $HOME/.config/dotfiles/init'" "$HOME"/.bash_aliases
+put "alias clone='gh auth login && gh repo clone lucasvsr/dotfiles $HOME/.config/dotfiles'" "$HOME"/.zshrc 
+put "alias setup='bash $HOME/.config/dotfiles/init'" "$HOME"/.zshrc
 
 if test -f "$HOME"/.bashrc
 then
