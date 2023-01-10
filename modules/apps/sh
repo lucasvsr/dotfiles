@@ -13,7 +13,7 @@ install() {
     if grep "\--aur" "$1" > /dev/null && exists yay
     then
 
-        $yay "$1"
+        $yay "$(sed -i "s|--aur||g" "$1")"
 
     else
 
@@ -26,11 +26,7 @@ install() {
 if ! exists yay;
 then
 
-    cd "$HOME" || exit
-    git clone https://aur.archlinux.org/yay.git
-    cd yay || exit
-    makepkg -si
-    sudo rm -r "$HOME"/yay
+    $pac yay
     
 fi
     
