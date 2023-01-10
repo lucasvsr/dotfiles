@@ -4,31 +4,25 @@ source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
 
 flags="-S --noconfirm --needed"
-pac="sudo pacman $flags"
-yay="yay $flags"
+pacman="sudo pacman $flags"
+pamac="pamac build --no-confirm"
 APPS="$DOTFILES/modules/apps/list"
+
 
 install() {
 
     if echo "$1" | grep "AUR" > /dev/null && exists yay
     then
 
-        $yay "${1//AUR/}"
+        $pamac "${1//AUR/}"
 
     else
 
-        $pac "$1"
+        $pacman "$1"
 
     fi
 
 }
-
-if ! exists yay;
-then
-
-    $pac yay
-    
-fi
     
 spinner "Iniciando a instalação dos pacotes" -- sleep 1
 
