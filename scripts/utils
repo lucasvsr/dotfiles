@@ -191,3 +191,18 @@ array_to_str() {
     
 
 }
+
+convert_key_value() {
+
+    local file=$1
+    local key=$2
+
+    test -f "$file" || (error "Arquivo não encontrado" && exit 1)
+
+    local VAR=$(< "$file" grep "$key")
+    local ARR=( ${VAR//"="/ } )
+    local VAR=${ARR[1]}
+
+    echo "$VAR"
+
+}
