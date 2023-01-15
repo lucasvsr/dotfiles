@@ -14,11 +14,11 @@ install() {
     if echo "$1" | grep "AUR" > /dev/null && exists yay
     then
 
-        $pamac "${1//AUR/}"
+        spinner "Instalando ${1//AUR/}" -- $pamac "${1//AUR/}" || app_repo_not_installed=( "${1//AUR/}" )
 
     else
 
-        $pacman "$1"
+        spinner "Instalando $1" -- $pacman "$1" || app_repo_not_installed=( "$1" )
 
     fi
 
@@ -29,21 +29,7 @@ spinner "Iniciando a instalação dos pacotes" -- sleep 1
 while IFS=$'\n' read -r package
 do
 
-    if is_not_installed "$package" 
-    then
-
-        install "$package"
-
-    elif ! is_not_installed "$package"
-    then
-
-        warn "$package já instalado"
-    
-    else
-        
-        app_repo_not_installed=( "$package" )
-
-    fi
+    install "$package"
 
 done < "$APPS"
 
