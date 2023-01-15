@@ -18,7 +18,7 @@ install() {
 
         local package=$(echo "$1" | tr -d "AUR" | tr -d "\n")
 
-        $pamac "$package" || app_repo_not_installed=( "$package" )
+        $pamac $package || app_repo_not_installed=( "$package" )
 
     else
 
