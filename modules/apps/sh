@@ -14,6 +14,8 @@ install() {
     if echo "$1" | grep "AUR" > /dev/null
     then
 
+        echo $1
+
         local package=$(echo "$1" | tr "AUR" " ")
 
         $pamac "$package" || app_repo_not_installed=( "$package" )
@@ -25,6 +27,9 @@ install() {
     fi
 
 }
+
+spinner "Atualizando os pacotes do sistema" -- sudo pamac update --no-confirm &&
+spinner "Aplicando atualização" -- sudo pamac upgrade --no-confirm
     
 spinner "Iniciando a instalação dos pacotes" -- sleep 1
 
