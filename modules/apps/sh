@@ -16,7 +16,7 @@ install() {
 
         echo $1
 
-        local package=$(echo "$1" | tr -d "AUR")
+        local package=$(echo "$1" | tr -d "AUR" | tr -d "\n")
 
         $pamac "$package" || app_repo_not_installed=( "$package" )
 
