@@ -1,4 +1,6 @@
 backintime-qt
+base-devel
+git
 visual-studio-code-bin AUR
 docker
 flatpak
