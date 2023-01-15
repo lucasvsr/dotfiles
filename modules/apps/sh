@@ -11,7 +11,7 @@ APPS="$DOTFILES/modules/apps/list"
 
 install() {
 
-    if echo "$1" | grep "AUR" > /dev/null && exists yay
+    if echo "$1" | grep "AUR" > /dev/null
     then
 
         local package=$(echo "$1" | tr "AUR" " ")
