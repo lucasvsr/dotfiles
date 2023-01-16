@@ -16,7 +16,7 @@ install() {
 
         echo $1
 
-        local package=$(echo "$1" | tr -d "AUR" | tr -d "\n")
+        local package=$(echo "$1" | sed -e "s|AUR\n||G")
 
         $pamac $package || app_repo_not_installed=( "$package" )
 
