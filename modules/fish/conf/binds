@@ -2,6 +2,6 @@ bind --erase --preset \es
 bind --erase --preset \et
 bind --erase --preset \ed
 
-bind --user \es 'sync and sleep 1; commandline -f repaint; clear' # ALT + S para sincronizar os dotfiles
+bind --user \es 'dsync and sleep 1; commandline -f repaint; clear' # ALT + S para sincronizar os dotfiles
 bind --user \et 'tmux; commandline -f repaint; clear' # ALT + T para abrir iniciar uma sessão no tmux
 bind --user \ed 'dotconf; commandline -f repaint; clear' # ALT + D Acessar os dotfiles

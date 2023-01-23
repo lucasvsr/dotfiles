@@ -100,7 +100,7 @@ build_array_valid $@
 build_array_with_not_installed
 install
 valid_install
-sync -m "Pacotes instalados: $(array_to_str ${PACKAGES_VALID_TO_INSTALL[@]})"
+dsync -m "Pacotes instalados: $(array_to_str ${PACKAGES_VALID_TO_INSTALL[@]})"
 
 
 

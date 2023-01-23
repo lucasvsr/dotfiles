@@ -82,4 +82,4 @@ done
 build_array_valid $@
 remove
 valid_uninstall
-sync -m "Pacotes removidos: $(array_to_str ${PACKAGES_TO_UNINSTALL[@]})"
+dsync -m "Pacotes removidos: $(array_to_str ${PACKAGES_TO_UNINSTALL[@]})"
