@@ -9,7 +9,13 @@ export DOTSHELL=fish
 for script in "$DOTFILES"/scripts/*
 do
 
-    source "$script"
+    if ! echo "$script" | grep install > /dev/null
+    then
+    
+        source "$script"
+
+    fi
+
 
 done
 
