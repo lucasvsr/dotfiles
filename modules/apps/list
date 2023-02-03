@@ -1,6 +1,7 @@
 base-devel
 curl 
 docker
-flatpak  
+flatpak
+intellij-idea-ultimate-edition  
 sushi
 wget
