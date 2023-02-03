@@ -5,12 +5,23 @@ source "$SCRIPTS"/manager
 
 APPS="$DOTFILES/modules/apps/list"
 
+spinner "Atualizando o sistema" -- sudo pacman -Syu
 spinner "Iniciando a instalação dos pacotes via Pacman" -- sleep 1
 
 while IFS=$'\n' read -r package; do
 
     package=$(echo $package | sed -e "s| ||g")
 
-    sudo pacman -Syu --needed --noconfirm "$package"
+    if is_not_installed "$package" 
+    then
+
+        spinner "Instalando o $package" -- sudo pacman -Sy --needed --noconfirm "$package"
+
+    elif exists "$package" 
+    then
+        
+        warn "$package não pode ser instalado"
+        
+    fi
 
 done <"$APPS"

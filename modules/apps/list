@@ -1,3 +1,4 @@
+backintime-git
 base-devel
 brave-bin
 curl 
@@ -6,5 +7,6 @@ flatpak
 intellij-idea-ultimate-edition
 microsoft-edge-stable-bin
 sushi
+visual-studio-code-bin
 wget
 
