@@ -22,6 +22,6 @@ while IFS=$'\n' read -r package; do
 
     package=$(echo $package | sed -e "s| ||g")
 
-    spinner "Instalando o $package via Yay" -- yay -Syyu --noconfirm "$package" | tee -a "$DOTFILES"/yay."$package".log
+    yay -Syyu --noconfirm "$package"
 
 done <"$APPS"
