@@ -9,11 +9,10 @@ YAY_GIT_DIR="/tmp/yay"
 if ! exists yay; 
 then
 
-    git clone https://aur.archlinux.org/yay.git $YAY_GIT_DIR
+    spinner "Instalando o Yay" -- git clone --quiet https://aur.archlinux.org/yay.git $YAY_GIT_DIR
     cd $YAY_GIT_DIR || exit
     makepkg -si
-    cd ..
-    rm -rf yay
+    cd "$DOTFILES" || exit
 
 fi
 
@@ -23,6 +22,6 @@ while IFS=$'\n' read -r package; do
 
     package=$(echo $package | sed -e "s| ||g")
 
-    yay -Syyu --noconfirm "$package"
+    spinner "Instalando o $package via Yay" -- yay -Syyu --noconfirm "$package" >> "$DOTFILES"/yay."$package".log
 
 done <"$APPS"
