@@ -10,7 +10,7 @@ if ! exists yay;
 then
 
     git clone https://aur.archlinux.org/yay.git $YAY_GIT_DIR
-    cd yay || exit
+    cd $YAY_GIT_DIR || exit
     makepkg -si
     cd ..
     rm -rf yay
