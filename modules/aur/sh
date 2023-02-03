@@ -4,13 +4,14 @@ source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
 
 APPS="$DOTFILES/modules/aur/list"
+YAY_GIT_DIR="/tmp/yay"
 
 if ! exists yay; 
 then
 
-    spinner "Iniciando a instalação do Yay" -- git clone https://aur.archlinux.org/yay.git
+    git clone https://aur.archlinux.org/yay.git $YAY_GIT_DIR
     cd yay || exit
-    spinner "Instalando o Yay" -- makepkg -si
+    makepkg -si
     cd ..
     rm -rf yay
 
