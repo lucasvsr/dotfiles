@@ -16,7 +16,7 @@ exists_in_repo() {
 
 is_not_installed() {
 
-    pacman -Qe "$1" &> /dev/null
+    ! pacman -Qe "$1" &> /dev/null
 
 }
 
