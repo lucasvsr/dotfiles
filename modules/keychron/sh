@@ -3,7 +3,7 @@
 source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
 
-ARQ=/etc/mkinitcpio.d/hid_apple.conf
+ARQ=/etc/modprobe.d/hid_apple.conf
 
 
 if [ ! -f $ARQ ];
@@ -11,6 +11,7 @@ then
 
     info "Iniciando a configuração do teclado"
     echo "options hid_apple fnmode=1" | sudo tee $ARQ > /dev/null &&
+    sudo sed -i "s|FILES=()|FILES=($ARQ)|g" /etc/mkinitcpio.conf
     sudo mkinitcpio -P &&
     success "Teclado configurado com sucesso"
   

@@ -1,7 +1,10 @@
 base-devel
+brave-bin
 curl 
 docker
 flatpak
-intellij-idea-ultimate-edition  
+intellij-idea-ultimate-edition
+microsoft-edge-stable-bin
 sushi
 wget
+
