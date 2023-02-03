@@ -11,6 +11,6 @@ while IFS=$'\n' read -r package; do
 
     package=$(echo $package | sed -e "s| ||g")
 
-    sudo pacman -Syu --needed -noconfirm "$package"
+    sudo pacman -Syu --needed --noconfirm "$package"
 
 done <"$APPS"
