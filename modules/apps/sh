@@ -17,7 +17,7 @@ while IFS=$'\n' read -r package; do
 
         spinner "Instalando o $package" -- sudo pacman -Sy --needed --noconfirm "$package"
 
-    elif exists "$package" 
+    elif exists "$package" || ! is_not_installed "$package"
     then
         
         warn "$package já instalado"
