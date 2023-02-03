@@ -3,7 +3,7 @@
 source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
 
-if test -z "$DOTSHELL" &&
+if test -n "$DOTSHELL" &&
    exists "$DOTSHELL" && 
    [ ! "$SHELL" = "$(which $DOTSHELL)" ]; 
 then
