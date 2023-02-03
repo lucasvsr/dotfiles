@@ -20,7 +20,7 @@ while IFS=$'\n' read -r package; do
     elif exists "$package" 
     then
         
-        warn "$package não pode ser instalado"
+        warn "$package já instalado"
         
     fi
 
