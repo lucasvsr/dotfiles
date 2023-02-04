@@ -2,6 +2,7 @@
 
 source "$SCRIPTS"/utils
 source "$SCRIPTS"/manager
+source "$DOTFILES"/modules/apps/chaotic
 
 APPS="$DOTFILES/modules/apps/list"
 
