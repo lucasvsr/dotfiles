@@ -13,3 +13,5 @@ then
     echo -e "[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf &> /dev/null
 
 fi
+
+spinner "Atualizando" -- sudo pacman -Syu
