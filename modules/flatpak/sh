@@ -17,22 +17,27 @@ then
 
     while IFS=$'\n' read -r app
     do
+        
+        if ! echo "$app" | grep "\#" &> /dev/null
+        then
 
-        if ! flatpak list --columns=application | grep -i "$app" > /dev/null &&
+            if ! flatpak list --columns=application | grep -i "$app" > /dev/null &&
            spinner "Instalando $app" -- flatpak install --user -y "$app"
-        then
+            then
 
-            success "$app instalado com sucesso"
+                success "$app instalado com sucesso"
 
-        elif flatpak list --columns=application | grep -i "$app" > /dev/null 
-        then
+            elif flatpak list --columns=application | grep -i "$app" > /dev/null 
+            then
 
-            warn "$app já instalado"
+                warn "$app já instalado"
 
-        else
-            
-            flatpak_not_installed=( "$app" )
-            
+            else
+                
+                flatpak_not_installed=( "$app" )
+                
+            fi
+
         fi
 
     done < "$DOTFILES"/modules/flatpak/apps

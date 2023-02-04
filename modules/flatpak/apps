@@ -5,7 +5,7 @@ com.github.GradienceTeam.Gradience
 com.github.tchx84.Flatseal
 com.jgraph.drawio.desktop
 com.obsproject.Studio
-com.raggesilver.BlackBox
+# com.raggesilver.BlackBox
 com.spotify.Client
 com.transmissionbt.Transmission
 io.dbeaver.DBeaverCommunity
