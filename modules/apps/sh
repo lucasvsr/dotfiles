@@ -6,7 +6,6 @@ source "$DOTFILES"/modules/apps/chaotic
 
 APPS="$DOTFILES/modules/apps/list"
 
-# spinner "Atualizando o sistema" -- sudo pacman -Syu
 spinner "Iniciando a instalação dos pacotes via Pacman" -- sleep 1
 
 while IFS=$'\n' read -r package; do
@@ -16,7 +15,7 @@ while IFS=$'\n' read -r package; do
     if is_not_installed "$package" 
     then
 
-        spinner "Instalando o $package" -- sudo pacman -Sy --needed --noconfirm "$package" &&
+        spinner "Instalando o $package" -- sudo pacman -Syu --needed --noconfirm "$package" &&
         success "$package instalado com sucesso"
 
     elif exists "$package" || ! is_not_installed "$package"
