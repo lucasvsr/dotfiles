@@ -28,6 +28,8 @@
         unrar
         lazydocker
         shellcheck
+        jq
+        yq
         spacevim
 
       ];
